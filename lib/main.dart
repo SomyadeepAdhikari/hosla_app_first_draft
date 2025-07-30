@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'services/auth_service.dart';
-import 'screens/splash_screen.dart';
+// import 'services/auth_service.dart'; // TODO: Temporarily commented out
+// import 'screens/splash_screen.dart'; // TODO: Temporarily commented out
+import 'core/theme/senior_friendly_theme.dart';
+import 'screens/profile_page.dart';
+import 'screens/settings_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +18,7 @@ void main() async {
   // Set system UI overlay style for better visibility
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Colors.teal,
+      statusBarColor: Color(0xFF5C7C98), // Warm blue to match senior theme
       statusBarIconBrightness: Brightness.light,
       systemNavigationBarColor: Colors.white,
       systemNavigationBarIconBrightness: Brightness.dark,
@@ -23,7 +26,8 @@ void main() async {
   );
 
   // Initialize authentication service
-  await AuthService().initialize();
+  // TODO: Temporarily commented out for testing
+  // await AuthService().initialize();
 
   runApp(const HoslaVartaApp());
 }
@@ -36,49 +40,56 @@ class HoslaVartaApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hosla Varta',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        scaffoldBackgroundColor:
-            const Color(0xFFFFF8E1), // Warm cream background
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.teal,
-          foregroundColor: Colors.white,
-          elevation: 2,
-          centerTitle: true,
-        ),
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(
-              fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87),
-          headlineMedium: TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
-          bodyLarge: TextStyle(fontSize: 18, color: Colors.black87),
-          bodyMedium: TextStyle(fontSize: 16, color: Colors.black87),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 56),
-            textStyle:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 3,
-          ),
-        ),
-        cardTheme: const CardThemeData(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12))),
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
-          elevation: 8,
-          selectedItemColor: Colors.teal,
-          unselectedItemColor: Colors.grey,
-          type: BottomNavigationBarType.fixed,
-        ),
-      ),
-      home: const SplashScreen(),
+      // NEW SENIOR-FRIENDLY THEME - better for older adults
+      theme: SeniorFriendlyTheme.warmTheme,
+      
+      // OLD TEAL THEME (commented out)
+      // theme: ThemeData(
+      //   primarySwatch: Colors.teal,
+      //   scaffoldBackgroundColor:
+      //       const Color(0xFFFFF8E1), // Warm cream background
+      //   appBarTheme: const AppBarTheme(
+      //     backgroundColor: Colors.teal,
+      //     foregroundColor: Colors.white,
+      //     elevation: 2,
+      //     centerTitle: true,
+      //   ),
+      //   textTheme: const TextTheme(
+      //     headlineLarge: TextStyle(
+      //         fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87),
+      //     headlineMedium: TextStyle(
+      //         fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
+      //     bodyLarge: TextStyle(fontSize: 18, color: Colors.black87),
+      //     bodyMedium: TextStyle(fontSize: 16, color: Colors.black87),
+      //   ),
+      //   elevatedButtonTheme: ElevatedButtonThemeData(
+      //     style: ElevatedButton.styleFrom(
+      //       minimumSize: const Size(double.infinity, 56),
+      //       textStyle:
+      //           const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+      //       shape:
+      //           RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      //       elevation: 3,
+      //     ),
+      //   ),
+      //   cardTheme: const CardThemeData(
+      //     elevation: 4,
+      //     shape: RoundedRectangleBorder(
+      //         borderRadius: BorderRadius.all(Radius.circular(12))),
+      //     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      //   ),
+      //   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      //     backgroundColor: Colors.white,
+      //     elevation: 8,
+      //     selectedItemColor: Colors.teal,
+      //     unselectedItemColor: Colors.grey,
+      //     type: BottomNavigationBarType.fixed,
+      //   ),
+      // ),
+      
+      // TODO: Temporarily bypass authentication - go directly to HomePage
+      home: const HomePage(),
+      // home: const SplashScreen(),
     );
   }
 }
@@ -349,32 +360,35 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Create New Post', style: TextStyle(fontSize: 20)),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('What would you like to share?',
+            const Text('What would you like to share?',
                 style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Column(
-                  children: [
-                    Icon(Icons.text_fields, size: 32, color: Colors.teal),
-                    Text('Text', style: TextStyle(fontSize: 14)),
-                  ],
+                _buildPostTypeButton(
+                  context,
+                  Icons.text_fields,
+                  'Text',
+                  Colors.blue,
+                  () => _showTextPostDialog(context),
                 ),
-                Column(
-                  children: [
-                    Icon(Icons.camera_alt, size: 32, color: Colors.teal),
-                    Text('Photo', style: TextStyle(fontSize: 14)),
-                  ],
+                _buildPostTypeButton(
+                  context,
+                  Icons.camera_alt,
+                  'Photo',
+                  Colors.green,
+                  () => _showImagePostDialog(context),
                 ),
-                Column(
-                  children: [
-                    Icon(Icons.mic, size: 32, color: Colors.teal),
-                    Text('Audio', style: TextStyle(fontSize: 14)),
-                  ],
+                _buildPostTypeButton(
+                  context,
+                  Icons.mic,
+                  'Audio',
+                  Colors.orange,
+                  () => _showAudioPostDialog(context),
                 ),
               ],
             ),
@@ -385,19 +399,581 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel', style: TextStyle(fontSize: 16)),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPostTypeButton(
+    BuildContext context,
+    IconData icon,
+    String label,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context); // Close the selection dialog
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showTextPostDialog(BuildContext context) {
+    final TextEditingController textController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.text_fields, color: Colors.blue, size: 24),
+            const SizedBox(width: 8),
+            const Text('Text Post'),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: textController,
+                decoration: const InputDecoration(
+                  hintText: 'What\'s on your mind?',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 5,
+                maxLength: 500,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Post creation feature coming soon',
-                      style: TextStyle(fontSize: 16)),
-                ),
-              );
+              if (textController.text.trim().isNotEmpty) {
+                Navigator.pop(context);
+                _createPost('text', textController.text.trim(), null);
+              }
             },
-            child: const Text('Continue', style: TextStyle(fontSize: 16)),
+            child: const Text('Post'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showImagePostDialog(BuildContext context) {
+    final TextEditingController captionController = TextEditingController();
+    String? selectedImagePath;
+    
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Row(
+            children: [
+              Icon(Icons.camera_alt, color: Colors.green, size: 24),
+              const SizedBox(width: 8),
+              const Text('Photo Post'),
+            ],
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Image selection area
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: selectedImagePath != null
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.image, size: 80, color: Colors.green),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Image Selected',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'demo_image.jpg',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        )
+                      : InkWell(
+                          onTap: () => _showImageSourceDialog(context, setState),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_photo_alternate, 
+                                  size: 60, color: Colors.grey[400]),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Tap to select photo',
+                                style: TextStyle(fontSize: 16, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Caption input
+                TextField(
+                  controller: captionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Caption (optional)',
+                    hintText: 'Write a caption for your photo...',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                  maxLength: 200,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            if (selectedImagePath != null)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    selectedImagePath = null;
+                  });
+                },
+                child: const Text('Remove Image'),
+              ),
+            ElevatedButton(
+              onPressed: selectedImagePath != null
+                  ? () {
+                      Navigator.pop(context);
+                      _createPost('image', captionController.text.trim(), selectedImagePath);
+                    }
+                  : null,
+              child: const Text('Post'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showImageSourceDialog(BuildContext context, StateSetter setState) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Image Source'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Colors.blue),
+              title: const Text('Camera'),
+              subtitle: const Text('Take a new photo'),
+              onTap: () {
+                Navigator.pop(context);
+                _selectImageFromCamera(setState);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: Colors.green),
+              title: const Text('Gallery'),
+              subtitle: const Text('Choose from gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _selectImageFromGallery(setState);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _selectImageFromCamera(StateSetter setState) {
+    // Simulate camera selection
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('📸 Photo captured from camera!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+    
+    // Simulate image selection delay
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      setState(() {
+        // Simulate having selected an image
+        // selectedImagePath = 'camera_image.jpg';
+      });
+    });
+  }
+
+  void _selectImageFromGallery(StateSetter setState) {
+    // Simulate gallery selection
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🖼️ Photo selected from gallery!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+    
+    // Simulate image selection delay
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      setState(() {
+        // Simulate having selected an image
+        // selectedImagePath = 'gallery_image.jpg';
+      });
+    });
+  }
+
+  void _showAudioPostDialog(BuildContext context) {
+    bool isRecording = false;
+    bool hasRecording = false;
+    int recordingDuration = 0;
+    final TextEditingController descriptionController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Row(
+            children: [
+              Icon(Icons.mic, color: Colors.orange, size: 24),
+              const SizedBox(width: 8),
+              const Text('Audio Post'),
+            ],
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Recording area
+                Container(
+                  width: double.infinity,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: isRecording ? Colors.red[50] : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isRecording ? Colors.red[300]! : Colors.grey[300]!,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (isRecording) ...[
+                        Icon(Icons.mic, size: 40, color: Colors.red),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Recording... ${recordingDuration}s',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ] else if (hasRecording) ...[
+                        Icon(Icons.audiotrack, size: 40, color: Colors.orange),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Audio recorded (${recordingDuration}s)',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ] else ...[
+                        Icon(Icons.mic_none, size: 40, color: Colors.grey[400]),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Tap to start recording',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Recording controls
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    if (!isRecording && !hasRecording)
+                      ElevatedButton.icon(
+                        onPressed: () => _startRecording(setState, (duration) {
+                          setState(() {
+                            isRecording = true;
+                            recordingDuration = duration;
+                          });
+                        }),
+                        icon: const Icon(Icons.mic, size: 20),
+                        label: const Text('Record'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    
+                    if (isRecording)
+                      ElevatedButton.icon(
+                        onPressed: () => _stopRecording(setState, (duration) {
+                          setState(() {
+                            isRecording = false;
+                            hasRecording = true;
+                            recordingDuration = duration;
+                          });
+                        }),
+                        icon: const Icon(Icons.stop, size: 20),
+                        label: const Text('Stop'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    
+                    if (hasRecording) ...[
+                      ElevatedButton.icon(
+                        onPressed: () => _playRecording(),
+                        icon: const Icon(Icons.play_arrow, size: 20),
+                        label: const Text('Play'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () => _deleteRecording(setState, () {
+                          setState(() {
+                            hasRecording = false;
+                            recordingDuration = 0;
+                          });
+                        }),
+                        icon: const Icon(Icons.delete, size: 20),
+                        label: const Text('Delete'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 16),
+                
+                // Description input
+                TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Description (optional)',
+                    hintText: 'Describe your audio message...',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                  maxLength: 150,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: hasRecording
+                  ? () {
+                      Navigator.pop(context);
+                      _createPost('audio', descriptionController.text.trim(), 'audio_recording.m4a');
+                    }
+                  : null,
+              child: const Text('Post'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _startRecording(StateSetter setState, Function(int) onDurationUpdate) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🎤 Recording started!'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+    // Simulate recording timer
+    onDurationUpdate(0);
+  }
+
+  void _stopRecording(StateSetter setState, Function(int) onComplete) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🎤 Recording stopped!'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+    // Simulate final duration
+    final duration = 15; // Simulate 15 seconds recording
+    onComplete(duration);
+  }
+
+  void _playRecording() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🔊 Playing audio recording...'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _deleteRecording(StateSetter setState, VoidCallback onDelete) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🗑️ Recording deleted'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+    onDelete();
+  }
+
+  void _createPost(String type, String content, String? mediaPath) {
+    // Simulate post creation
+    HapticFeedback.lightImpact();
+    
+    String message;
+    IconData icon;
+    Color color;
+    
+    switch (type) {
+      case 'text':
+        message = '📝 Text post created successfully!';
+        icon = Icons.text_fields;
+        color = Colors.blue;
+        break;
+      case 'image':
+        message = '📸 Photo post created successfully!';
+        icon = Icons.image;
+        color = Colors.green;
+        break;
+      case 'audio':
+        message = '🎤 Audio post created successfully!';
+        icon = Icons.audiotrack;
+        color = Colors.orange;
+        break;
+      default:
+        message = '✅ Post created successfully!';
+        icon = Icons.check_circle;
+        color = Colors.green;
+    }
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    message,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  if (content.isNotEmpty)
+                    Text(
+                      content.length > 50 
+                          ? '${content.substring(0, 50)}...'
+                          : content,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: color,
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        action: SnackBarAction(
+          label: 'View',
+          textColor: Colors.white,
+          onPressed: () {
+            // Navigate to the post or news feed
+            setState(() {
+              _selectedIndex = 0; // Go to home/feed page
+            });
+          },
+        ),
       ),
     );
   }
@@ -422,11 +998,32 @@ class VartaWallPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
+            },
+            icon: const Icon(Icons.person_rounded, size: 24),
+            tooltip: 'Profile',
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+            icon: const Icon(Icons.settings_rounded, size: 24),
+            tooltip: 'Settings',
+          ),
+          IconButton(
+            onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Notification feature coming soon')),
               );
             },
             icon: const Icon(Icons.notifications_rounded, size: 24),
+            tooltip: 'Notifications',
           ),
         ],
       ),
@@ -619,6 +1216,26 @@ class TrustCirclePage extends StatelessWidget {
           ],
         ),
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
+            },
+            icon: const Icon(Icons.person_rounded, size: 24),
+            tooltip: 'Profile',
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+            icon: const Icon(Icons.settings_rounded, size: 24),
+            tooltip: 'Settings',
+          ),
           IconButton(
             onPressed: () {
               _showAddFamilyDialog(context);
@@ -950,12 +1567,33 @@ class ChatPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
+            },
+            icon: const Icon(Icons.person_rounded, size: 24),
+            tooltip: 'Profile',
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+            icon: const Icon(Icons.settings_rounded, size: 24),
+            tooltip: 'Settings',
+          ),
+          IconButton(
+            onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                     content: Text('New chat feature coming soon')),
               );
             },
             icon: const Icon(Icons.add_comment_rounded, size: 24),
+            tooltip: 'New Chat',
           ),
         ],
       ),
@@ -1194,12 +1832,33 @@ class EventsPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
+            },
+            icon: const Icon(Icons.person_rounded, size: 24),
+            tooltip: 'Profile',
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+            icon: const Icon(Icons.settings_rounded, size: 24),
+            tooltip: 'Settings',
+          ),
+          IconButton(
+            onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                     content: Text('Create new event feature coming soon')),
               );
             },
             icon: const Icon(Icons.add_rounded, size: 24),
+            tooltip: 'Add Event',
           ),
         ],
       ),
@@ -1451,6 +2110,28 @@ class EmergencyPage extends StatelessWidget {
           ],
         ),
         backgroundColor: Colors.red,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
+            },
+            icon: const Icon(Icons.person_rounded, size: 24),
+            tooltip: 'Profile',
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+            icon: const Icon(Icons.settings_rounded, size: 24),
+            tooltip: 'Settings',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),

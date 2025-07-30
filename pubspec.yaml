@@ -47,8 +47,8 @@ dependencies:
   geolocator: ^10.1.0
   google_maps_flutter: ^2.5.0
 
-  # QR Code
-  qr_code_scanner: ^1.0.1
+  # QR Code (temporarily commented out to resolve build issues)
+  # mobile_scanner: ^3.5.7
   qr_flutter: ^4.1.0
 
   # Permissions
